@@ -1,0 +1,26 @@
+#footer {
+  margin: 6em 0 0 0;
+  background-color: transparent;
+  /* min-height: 100vh; */
+  padding-bottom: 2em;
+  text-align: center;
+  width: 100%;
+  font-size: 0.8em;
+  color: white;
+}
+
+#footer p {
+  color: white;
+  margin: 0px;
+  padding: 0px;
+}
+
+.footer-autor {
+  color: white !important;
+  text-decoration: none;
+  transition: ease-in-out 0.5s;
+}
+.footer-autor:hover {
+  color: #ffffff !important;
+  text-decoration: underline !important;
+}

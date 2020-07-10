@@ -1,0 +1,19 @@
+.quote-card {
+    background-color: white;
+    padding: 25px 20px !important;
+    border-radius: 20px;
+    position: relative;
+    margin-bottom: 2rem;
+    color: #3f3f3f !important;
+}
+
+.quote-card h2 {
+    font-weight: bold;
+    color: #3f3f3f;
+}
+.quote-card p {
+    font-size: 18px!important;
+}
+.quote-card p span {
+    font-weight: bold;
+}

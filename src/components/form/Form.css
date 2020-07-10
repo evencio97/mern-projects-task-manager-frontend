@@ -1,0 +1,28 @@
+.crypto-form {
+    background-color: white;
+    padding: 40px 20px !important;
+    border-radius: 20px;
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.crypto-form-select {
+    width: 100% !important;
+}
+
+.crypto-form-submit {
+    margin: 1.5em 0 0 0 !important;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 1.2em;
+    background-color: #66a2fe;
+    border: none;
+    width: 100%;
+    border-radius: 10px;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+.crypto-form-submit:hover {
+    background-color: #326ac0;
+    cursor: pointer;
+}

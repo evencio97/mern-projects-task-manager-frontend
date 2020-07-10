@@ -1,0 +1,28 @@
+@import url("../../variables.css");
+
+.user-form {
+    background-color: var(--gris2);
+    height: 100vh;
+    min-height: 800px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.new-account-text {
+    color: var(--gris2);
+    margin-top: 1rem;
+    display: block;
+    font-size: 0.7em;
+    opacity: .7;
+}
+.new-account-link {
+    color: var(--gris2);
+    text-decoration: none;
+    text-decoration: underline;
+    transition: ease-in-out .5s;
+}
+.new-account-link:hover {
+    color: var(--black);
+    text-decoration: underline;
+}
