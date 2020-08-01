@@ -1,0 +1,68 @@
+@import url("../../variables.css");
+
+aside  {
+    padding: 3rem;
+    padding-bottom: 4.5rem;
+}
+aside h1  {
+    font-size: 2.8rem;
+    margin-bottom: 2rem;
+}
+
+.sidebar-section {
+    margin-top: 3em;
+}
+.sidebar-section h2 {
+    font-size: 1.5em;
+    margin: 0 0 20px 0;
+}
+.sidebar-section .user-icon {
+    font-size: 5em;
+    margin: 0 0 20px 0;
+    color: var(--gris2);
+}
+.sidebar-section .edit-profile {
+    width: fit-content;
+}
+
+.sidebar-title-action {
+    min-width: fit-content !important;
+    margin: 0 10px 0 0 !important;
+    width: fit-content;
+}
+.sidebar-button-action {
+    min-width: min-content !important;
+    width: min-content !important;
+    max-width: min-content !important;
+    padding: 10px 15px !important;
+}
+
+.logout-button {
+    background-color: var(--red1);
+    padding: 10px;
+    transition: ease-in-out .5s;
+    text-align: center;
+    margin: 0em -3em;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+.logout-button:hover {
+    background-color: var(--red2);
+    padding: 15px;
+}
+.logout-button span, .logout-button i {
+    color: var(--white);
+    transition: ease-in-out .5s;
+}
+.logout-button:hover span {
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+@media (min-width: 768px) {
+    aside {
+        background-color: var(--white);
+        flex: 0 0 300px;
+    }
+}

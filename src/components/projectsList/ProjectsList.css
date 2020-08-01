@@ -1,0 +1,17 @@
+.projects-list li {
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
+.projects-list li a {
+    font-size: 1.4rem;
+    color: var(--gris2);
+    line-height: 1.5;
+    font-weight: 300;
+}
+.projects-list span {
+    font-size: 1.2em;
+}
+.projects-list li .sidebar-button-action {
+    padding: 8px 7px 8px 10px !important;
+    font-size: .8em;
+}

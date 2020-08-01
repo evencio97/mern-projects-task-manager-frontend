@@ -1,16 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { Button, InputAdornment, IconButton } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
-import LoadingSpinner from '../loadingSpinner/LoadingSpinner';
 import PropTypes from 'prop-types';
 // import axios from 'axios';
 import { Link } from 'react-router-dom'
-import Input from '../input/Input';
 import './Auth.css';
+// Contexts
+import AppContext from '../../context/app/AppContext';
+// Components
+import LoadingSpinner from '../loadingSpinner/LoadingSpinner';
+import Input from '../input/Input';
 
-function Form({ loading, setLoading, setUser, addNotification }) {
+function Login({ addNotification }) {
+    // App Context
+    const appContext = useContext(AppContext);
+    const { loading, setLoading, setUser } = appContext;
+
     const [loginData, setLoginData] = useState({ email: '', password: '', showPassword: false });
     const { email, password, showPassword } = loginData
+    var passwordCheck = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
 
     const initForm = (email=true) => {
         let aux =  { email: '', password: '', showPassword: false };
@@ -18,10 +26,12 @@ function Form({ loading, setLoading, setUser, addNotification }) {
         setLoginData( aux );
     }
 
-    const checkLoginData = (event) => {
+    const checkSubmitData = (event) => {
         event.preventDefault();
-        if (!(email && email.trim())) return addNotification({ variant: 'error', message: 'Please enter your account email.' });
-        if (!(password.value && password.value.trim())) return addNotification({ variant: 'error', message: "The password can't be empty." });
+        if (!(email.length && email.trim().length))
+            return addNotification({ variant: 'error', message: "The email can't be empty." });
+        if (!(password.length && passwordCheck.test(password)))
+            return addNotification({ variant: 'error', message: "The password can't be empty or is invalid." });
         
         setLoading(true);
         // requestAPI();
@@ -56,19 +66,17 @@ function Form({ loading, setLoading, setUser, addNotification }) {
         return false;
     }
     const valPasswordInput = value => {
-        var re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
+        // var re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
         if (value.length === 0) return false;
-        if (value.trim().length === 0 || !re.test(value)) return true;
+        if (value.trim().length === 0 || !passwordCheck.test(value)) return true;
         return false;
     }
     const onChangeForm = target => {
         setLoginData( {...loginData, [target.name]: target.value} )
     }
-    // const setPasswordValue = value => { setPassword({ value: value, show: password.show }); };
     
     const mouseDownPassword = (event) => { event.preventDefault(); };
-    const togglePassword = () => { 
-        // setPassword({ value: password.value, show: !password.show }); 
+    const togglePassword = () => {
         setLoginData({ ...loginData, showPassword: !showPassword })
     };
 
@@ -76,7 +84,7 @@ function Form({ loading, setLoading, setUser, addNotification }) {
         <div className="user-form">
             <div className="form-container custom-shadow-dark animated fadeInDown text-center">
                 <h1>Please login to your account</h1>
-                <form className="text-left" id="loginForm" onSubmit={(e) => checkLoginData(e)}>
+                <form className="text-left" id="loginForm" onSubmit={(e) => checkSubmitData(e)}>
                     <div className="form-field">
                         <Input type="email" id="loginEmail" name="email" label="Enter your email" variant="outlined" 
                             setValue={onChangeForm} valValue={valTextInput} className="" value={email} fullWidth />
@@ -99,22 +107,19 @@ function Form({ loading, setLoading, setUser, addNotification }) {
                     <div className="form-field">
                         <Button type="submit" id="loginSubmit" variant="contained" color="primary"
                             className="btn btn-primary btn-block" size="large">
-                            Login <i className="fas fa-rocket" style={{ color: "white", marginLeft: "10px" }}></i>
+                            Login <i className="fas fa-check" style={{ color: "white", marginLeft: "10px" }}></i>
                         </Button>
                     </div>
                 </form>
-                <span className="new-account-text">Don't have an account? Click here to <Link to={'register'} className="new-account-link">create an account</Link></span>
+                <span className="new-account-text">Don't have an account? Click here to <Link to={'register'}>create an account</Link></span>
+                <LoadingSpinner loading={loading} />
             </div>
-            <LoadingSpinner loading={loading} />
         </div>
     );
 }
 
-Form.propTypes = {
-    loading: PropTypes.bool.isRequired,
-    setLoading: PropTypes.func.isRequired,
-    setUser: PropTypes.func.isRequired,
+Login.propTypes = {
     addNotification: PropTypes.func.isRequired
 }
 
-export default Form;
+export default Login;

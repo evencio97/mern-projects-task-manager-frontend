@@ -1,18 +1,17 @@
 #footer {
-  margin: 6em 0 0 0;
   background-color: transparent;
-  /* min-height: 100vh; */
-  padding-bottom: 2em;
+  padding: 2em 0 1em 0;
   text-align: center;
   width: 100%;
-  font-size: 0.8em;
   color: white;
 }
 
 #footer p {
+  font-size: 0.8em;
   color: white;
   margin: 0px;
   padding: 0px;
+  letter-spacing: 2.5px;
 }
 
 .footer-autor {

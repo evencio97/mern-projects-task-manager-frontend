@@ -3,10 +3,12 @@
     top: 0;
     width: 100%;
     height: 100%;
-    margin-left: -20px;
     border-radius: inherit;
     background-color: rgba(63, 63, 63, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.loading-spinner div {
+    color: white;
 }

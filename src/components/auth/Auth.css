@@ -2,27 +2,44 @@
 
 .user-form {
     background-color: var(--gris2);
-    height: 100vh;
-    min-height: 800px;
+    height: 100%;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 20px;
 }
 
 .new-account-text {
     color: var(--gris2);
     margin-top: 1rem;
     display: block;
-    font-size: 0.7em;
+    font-size: 1em;
     opacity: .7;
 }
-.new-account-link {
-    color: var(--gris2);
-    text-decoration: none;
-    text-decoration: underline;
-    transition: ease-in-out .5s;
+
+.form-field.col-md-6 {
+    display: inline-block;
+    padding: 0 5px 0 0;
 }
-.new-account-link:hover {
-    color: var(--black);
-    text-decoration: underline;
+
+#footer {
+    background-color: var(--gris2) !important;
+}
+
+.loading-spinner {
+    margin-left: -3em;
+}
+
+@media (max-width: 767px){
+    .form-field.col-md-6 {
+        padding: 0 !important;
+    }
+    .form-container {
+        padding: 3rem 1rem;
+        width: 100%;
+    }
+    .loading-spinner {
+        margin-left: -1em;
+    }
 }
