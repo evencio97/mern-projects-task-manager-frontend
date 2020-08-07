@@ -1,12 +1,13 @@
 import React, { useReducer } from 'react';
 import appContext from './AppContext';
 import appReducer from './AppReducer';
-import { SET_LOADING, SET_USER } from '../../types';
+import { SET_LOADING, SET_USER, SET_TOKEN } from '../../types';
 
 const AppState = props => {
     const initialState = {
         loading: false,
-        user: { name: "Evencio", lastname: "Hernández", email: "dev.evenciohernandez@gmail.com" }
+        user: { name: "Evencio", lastname: "Hernández", email: "dev.evenciohernandez@gmail.com" },
+        token: null
     }
 
     // Dispatch for exec actions
@@ -19,13 +20,18 @@ const AppState = props => {
     const setUser = (data) => {
         dispatch({ type: SET_USER, data: data })
     }
+    // Token
+    const setToken = (data) => {
+        dispatch({ type: SET_TOKEN, data: data })
+    }
 
     return (
         <appContext.Provider value={{
             loading: state.loading,
             user: state.user,
             setLoading,
-            setUser
+            setUser,
+            setToken
         }}>
             {props.children}
         </appContext.Provider>

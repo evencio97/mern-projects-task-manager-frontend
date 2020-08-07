@@ -6,6 +6,8 @@ export default (state, action) => {
             return {...state, loading: action.data};
         case SET_USER:
             return { ...state, user: action.data };
+        case SET_TOKEN:
+            return { ...state, token: action.data };
         default:
             return state;
     }
