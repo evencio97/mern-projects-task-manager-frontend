@@ -1,59 +1,72 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { Button } from '@material-ui/core';
 import Input from '../input/Input';
-import PropTypes from 'prop-types';
 import './FormTask.css';
 // Contexts
 import AppContext from '../../context/app/AppContext';
+import UserContext from '../../context/user/UserContext';
 import ProjectContext from '../../context/projects/ProjectContext';
+import TaskContext from '../../context/tasks/TaskContext';
+// Services
+import { CreateTaskService, UpdateTaskService } from '../../services/TaskService';
 
-const FormTask = ({ addNotification }) => {
-    // Project Context
-    const projectContext = useContext(ProjectContext);
-    const { taskSelected, selectTask } = projectContext;
-    // App Context
-    const appContext = useContext(AppContext);
-    const { setLoading } = appContext;
+const FormTask = () => {
+    // Contexts
+    const { setLoading, addNotification }= useContext(AppContext);
+    const { token, checkSessionExpError }= useContext(UserContext);
+    const { projectSelected }= useContext(ProjectContext);
+    const { taskSelected, addTask, updateTask, selectTask }= useContext(TaskContext);
     // Local States
-    const initTaskState = {name:''}
-    const [taskTemp, setTaskTemp] = useState(initTaskState);
+    const iniTaskTemp = {name:''}
+    const [taskTemp, setTaskTemp] = useState(iniTaskTemp);
     
     useEffect(() => {
         if (taskSelected) setTaskTemp(taskSelected);
-        else if (taskTemp !== initTaskState) setTaskTemp(initTaskState);
+        else if (taskTemp !== iniTaskTemp) setTaskTemp(iniTaskTemp);
     }, [taskSelected]);
 
     const checkFormTask = (event) => {
         event.preventDefault();
         if (!(taskTemp.name.length && taskTemp.name.trim().length))
             return addNotification({ variant: 'error', message: "The name of the task can't be empty." });
-        
-        // requestAPI();
+        // Check if new or update
+        if (!taskSelected) makeCreateTask();
+        else makeUpdateTask();
     };
-        
-    /*const requestAPI = async () => {
+    
+    const makeCreateTask = async () => {
         setLoading(true);
-        let url = "https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=" + tempCryptoData.currency;
-        let result = await axios.get(url);
-        // Hide Spinner
+        // Task update request
+        let result= await CreateTaskService(projectSelected._id, taskTemp, token);
         setLoading(false);
+        // Check error
+        if (result.error){
+            addNotification({ variant: 'error', message: result.errorCode });
+            return checkSessionExpError(result.errorCode);
+        }
+        // Update state
+        addTask(result.task);
+        addNotification({ variant: 'success', message: "taskAdded" });
+        // Init form
+        setTaskTemp(iniTaskTemp);
+    }
 
-        // Validate response
-        if (result.status !== 200 || !result.data) 
-            return addNotification({ variant: 'error', message: 'Please try again later.' });
-        if (result.Message === "You are over your rate limit please upgrade your account!")
-            return addNotification({ variant: 'error', message: 'Query limit has been reached, please try again later.' });
-        let aux = result.data.Data;
-        if (!Array.isArray(aux) || aux===0) 
-            return addNotification({ variant: 'error', message: "Please try with a different currency." });
-        
-        let cryptosAux = [];
-        aux.forEach(element => {
-            cryptosAux.push({ value: element.CoinInfo.Name, label: element.CoinInfo.FullName})
-        });
-        setCryptosOptions(cryptosAux);
-        initForm();
-    }*/
+    const makeUpdateTask = async () => {
+        setLoading(true);
+        // Task update request
+        let result= await UpdateTaskService(projectSelected._id, taskTemp._id, taskTemp, token);
+        setLoading(false);
+        // Check error
+        if (result.error){
+            addNotification({ variant: 'error', message: result.errorCode });
+            return checkSessionExpError(result.errorCode);
+        }
+        // Update state
+        updateTask(result.task);
+        addNotification({ variant: 'success', message: "taskUpdated" });
+        // Init form
+        setTaskTemp(iniTaskTemp);
+    }
 
     const valTextInput = value => {
         if (value.length === 0) return false;
@@ -91,8 +104,4 @@ const FormTask = ({ addNotification }) => {
     );
 }
 
-FormTask.propTypes = {
-    addNotification: PropTypes.func.isRequired
-}
- 
 export default FormTask;

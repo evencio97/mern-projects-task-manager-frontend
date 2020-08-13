@@ -1,64 +1,55 @@
 import React, { useState, useContext } from 'react';
 import { Button, InputAdornment, IconButton } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
-import PropTypes from 'prop-types';
-// import axios from 'axios';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import './Auth.css';
 // Contexts
 import AppContext from '../../context/app/AppContext';
+import UserContext from '../../context/user/UserContext';
+// Services
+import { LoginService } from '../../services/UserService';
 // Components
 import LoadingSpinner from '../loadingSpinner/LoadingSpinner';
 import Input from '../input/Input';
 
-function Login({ addNotification }) {
+function Login({ history }) {
     // App Context
-    const appContext = useContext(AppContext);
-    const { loading, setLoading, setUser } = appContext;
+    const { loading, setLoading, addNotification }= useContext(AppContext);
+    // User Context
+    const { login }= useContext(UserContext);
 
-    const [loginData, setLoginData] = useState({ email: '', password: '', showPassword: false });
+    const initLoginState= { email: '', password: '', showPassword: false };
+    // Login form state
+    const [loginData, setLoginData] = useState(initLoginState);
     const { email, password, showPassword } = loginData
     var passwordCheck = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
 
-    const initForm = (email=true) => {
-        let aux =  { email: '', password: '', showPassword: false };
-        if (!email) aux.email = email
+    const initForm = (iniEmail=false) => {
+        let aux =  initLoginState;
+        if (!iniEmail) aux.email = email
         setLoginData( aux );
     }
 
-    const checkSubmitData = (event) => {
+    const checkSubmitData = async (event) => {
         event.preventDefault();
         if (!(email.length && email.trim().length))
             return addNotification({ variant: 'error', message: "The email can't be empty." });
         if (!(password.length && passwordCheck.test(password)))
             return addNotification({ variant: 'error', message: "The password can't be empty or is invalid." });
-        
         setLoading(true);
-        // requestAPI();
-    };
-    
-    /*const requestAPI = async () => {
-        let url = "https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=" + tempCryptoData.currency;
-        let result = await axios.get(url);
-        // Hide Spinner
+        // Login request
+        let result= await LoginService({email, password});
         setLoading(false);
-
-        // Validate response
-        if (result.status !== 200 || !result.data) 
-            return addNotification({ variant: 'error', message: 'Please try again later.' });
-        if (result.Message === "You are over your rate limit please upgrade your account!")
-            return addNotification({ variant: 'error', message: 'Query limit has been reached, please try again later.' });
-        let aux = result.data.Data;
-        if (!Array.isArray(aux) || aux===0) 
-            return addNotification({ variant: 'error', message: "Please try with a different currency." });
-        
-        let cryptosAux = [];
-        aux.forEach(element => {
-            cryptosAux.push({ value: element.CoinInfo.Name, label: element.CoinInfo.FullName})
-        });
-        setCryptosOptions(cryptosAux);
+        // Check error
+        if (result.error) return addNotification({ variant: 'error', message: result.errorCode });
+        // Update state
+        let { user, token } = result;
+        login(user, token);
+        addNotification({ variant: 'success', message: "login" });
+        // Init form
         initForm();
-    }*/
+        history.push("/");
+    };
 
     const valTextInput = value => {
         if (value.length === 0) return false;
@@ -66,7 +57,6 @@ function Login({ addNotification }) {
         return false;
     }
     const valPasswordInput = value => {
-        // var re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
         if (value.length === 0) return false;
         if (value.trim().length === 0 || !passwordCheck.test(value)) return true;
         return false;
@@ -82,7 +72,7 @@ function Login({ addNotification }) {
 
     return (
         <div className="user-form">
-            <div className="form-container custom-shadow-dark animated fadeInDown text-center">
+            <div className="form-container auth-form-container custom-shadow-dark animated fadeInDown text-center">
                 <h1>Please login to your account</h1>
                 <form className="text-left" id="loginForm" onSubmit={(e) => checkSubmitData(e)}>
                     <div className="form-field">
@@ -116,10 +106,6 @@ function Login({ addNotification }) {
             </div>
         </div>
     );
-}
-
-Login.propTypes = {
-    addNotification: PropTypes.func.isRequired
 }
 
 export default Login;

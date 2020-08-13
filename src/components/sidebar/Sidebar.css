@@ -46,6 +46,7 @@ aside h1  {
     position: absolute;
     bottom: 0;
     width: 100%;
+    cursor: pointer;
 }
 .logout-button:hover {
     background-color: var(--red2);

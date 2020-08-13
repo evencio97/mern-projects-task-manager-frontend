@@ -1,61 +1,48 @@
 import React, { useState, useContext, Fragment } from 'react'
 import { Button } from '@material-ui/core';
-import PropTypes from 'prop-types';
 import './NewProject.css';
 import $ from 'jquery';
 // Contexts
 import AppContext from '../../context/app/AppContext';
 import ProjectContext from '../../context/projects/ProjectContext';
+import UserContext from '../../context/user/UserContext';
+// Services
+import { CreateProjectService } from '../../services/ProjectService';
 // Components
 import Input from '../input/Input';
 
-const NewProject = ({ addNotification }) => {
-    // Project Context
-    const projectContext = useContext(ProjectContext);
-    const { addProject } = projectContext;
-    // App Context
-    const appContext = useContext(AppContext);
-    const { setLoading } = appContext;
+const NewProject = () => {
+    // Contexts
+    const { setLoading, addNotification }= useContext(AppContext);
+    const { token, checkSessionExpError }= useContext(UserContext);
+    const { addProject }= useContext(ProjectContext);
     // Local States
     const [newProject, setNewProject] = useState({ name: '', show: false});
-    
+
     const initForm = () => {
         setNewProject({ name: '', show: false});
         toggleNewProjectForm(false)
     }
 
-    const checkNewProject = (event) => {
+    const checkNewProject = async (event) => {
         event.preventDefault();
         if (!(newProject.name.length && newProject.name.trim().length))
             return addNotification({ variant: 'error', message: "The name of the project can't be empty." });
-        
-        requestAPI();
-    };
-        
-    const requestAPI = async () => {
-        // setLoading(true);
-        // let url = "https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=" + tempCryptoData.currency;
-        // let result = await axios.get(url);
-        // // Hide Spinner
-        // setLoading(false);
-
-        // // Validate response
-        // if (result.status !== 200 || !result.data) 
-        //     return addNotification({ variant: 'error', message: 'Please try again later.' });
-        // if (result.Message === "You are over your rate limit please upgrade your account!")
-        //     return addNotification({ variant: 'error', message: 'Query limit has been reached, please try again later.' });
-        // let aux = result.data.Data;
-        // if (!Array.isArray(aux) || aux===0) 
-        //     return addNotification({ variant: 'error', message: "Please try with a different currency." });
-        
-        // let cryptosAux = [];
-        // aux.forEach(element => {
-        //     cryptosAux.push({ value: element.CoinInfo.Name, label: element.CoinInfo.FullName})
-        // });
-        // setCryptosOptions(cryptosAux);
-        // addProject({name: newProject.name});
+        setLoading(true);
+        // New project request
+        let result= await CreateProjectService({ ...newProject, show: undefined }, token);
+        setLoading(false);
+        // Check error
+        if (result.error){
+            addNotification({ variant: 'error', message: result.errorCode });
+            return checkSessionExpError(result.errorCode);
+        }
+        // Update state
+        addProject(result.project);
+        addNotification({ variant: 'success', message: "projectAdded" });
+        // Init form
         initForm();
-    }
+    };
 
     const valTextInput = value => {
         if (value.length === 0) return false;
@@ -103,10 +90,6 @@ const NewProject = ({ addNotification }) => {
             </form>
         </Fragment>
     );
-}
-
-NewProject.propTypes = {
-    addNotification: PropTypes.func.isRequired
 }
  
 export default NewProject;

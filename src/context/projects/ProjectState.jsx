@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import projectContext from './ProjectContext';
 import projectReducer from './ProjectReducer';
-import { SET_PROJECTS, SELECT_PROJECT, UPDATE_PROJECT, DELETE_PROJECT } from '../../types';
+import { INI_PROJECTS_STATE, SET_PROJECTS, SELECT_PROJECT, UPDATE_PROJECT, DELETE_PROJECT } from '../../types';
 
 const ProjectState = props => {
     const initialState = {
@@ -14,11 +14,16 @@ const ProjectState = props => {
     // Dispatch for exec actions
     const [state, dispatch] = useReducer(projectReducer, initialState);
     // Project
-    const setProjectList = (data) => { 
+    const iniProjectState = () => { 
+        dispatch({ type: INI_PROJECTS_STATE, data: initialState });
+        return true;
+    }
+    const setProjectList = (data, concat=false) => { 
         if (!(data && 'results' in data && 'page' in data && 'lastPage' in data && 'total' in data)) return false;
         dispatch({ 
             type: SET_PROJECTS, 
-            data: { projects: data.results, page: data.page, lastPage: data.lastPage, total: data.total }
+            data: { projects: concat? state.projects.concat(data.results):data.results, 
+                page: data.page, lastPage: data.lastPage, total: data.total }
         });
         return true;
     }
@@ -48,6 +53,7 @@ const ProjectState = props => {
             projects: state.projects, page: state.page, 
             lastPage: state.lastPage, total: state.total,
             projectSelected: state.projectSelected,
+            iniProjectState,
             setProjectList,
             addProject,
             selectProject,

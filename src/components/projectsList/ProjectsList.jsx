@@ -1,54 +1,38 @@
 import React, { Fragment, useContext, useEffect } from 'react'
 import { Button } from '@material-ui/core';
-import PropTypes from 'prop-types';
 import './ProjectsList.css';
 // Contexts
+import AppContext from '../../context/app/AppContext';
+import UserContext from '../../context/user/UserContext';
 import ProjectContext from '../../context/projects/ProjectContext';
+// Services
+import { GetAllProjectsService } from '../../services/ProjectService';
 
-const ProjectList = ({ addNotification }) => {
-    // Project Context
-    const projectContext = useContext(ProjectContext);
-    const { projectsList, setProjectList, selectProject } = projectContext;
-
-    const projectsListTemp = [
-        {   _id: 1, name: 'Project 1',
-        tasks: [
-            {_id: 1, name:'Task 1', status: true}, {_id: 2, name:'Task 2', status: true},
-            {_id: 3, name:'Task 3', status: false}, {_id: 4, name:'Task 4', status: true}
-        ]
-        },
-        {   _id: 2, name: 'Project 2',
-            tasks: [{_id: 1, name:'Task 1', status: false}, {_id: 2, name:'Task 2', status: false}]
-        },
-        { _id: 3, name: 'Project 3', tasks: [] }
-    ];
+const ProjectList = () => {
+    // Contexts
+    const { setLoading, addNotification }= useContext(AppContext);
+    const { token, checkSessionExpError }= useContext(UserContext);
+    const { projects, page, lastPage, setProjectList, selectProject }= useContext(ProjectContext);
 
     // Load of user projects
     useEffect(() => {
-        getProjects();
+        getProjects(1);
     }, []);
-    const getProjects = async () => {
-        /*setLoading(true);
-        let url = "https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=" + tempCryptoData.currency;
-        let result = await axios.get(url);
-        // Hide Spinner
+    
+    const getProjects = async (newPage, notify=false) => {
+        if (newPage>lastPage) return addNotification({ variant: 'error', message: "noMoreProjects" });
+        setLoading(true);
+        // Projects request
+        let result= await GetAllProjectsService(token, newPage);
         setLoading(false);
-
-        // Validate response
-        if (result.status !== 200 || !result.data) 
-            return addNotification({ variant: 'error', message: 'Please try again later.' });
-        if (result.Message === "You are over your rate limit please upgrade your account!")
-            return addNotification({ variant: 'error', message: 'Query limit has been reached, please try again later.' });
-        let aux = result.data.Data;
-        if (!Array.isArray(aux) || aux===0) 
-            return addNotification({ variant: 'error', message: "Please try with a different currency." });
-        
-        let cryptosAux = [];
-        aux.forEach(element => {
-            cryptosAux.push({ value: element.CoinInfo.Name, label: element.CoinInfo.FullName})
-        });
-        setCryptosOptions(cryptosAux);*/
-        setProjectList(projectsListTemp);
+        // Check error
+        if (result.error){
+            addNotification({ variant: 'error', message: result.errorCode });
+            return checkSessionExpError(result.errorCode);
+        }
+        // Update state
+        setProjectList(result.projects, newPage>1);
+        if (notify) addNotification({ variant: 'success', message: "projectsGet" });
     }
 
     return (
@@ -56,13 +40,13 @@ const ProjectList = ({ addNotification }) => {
             <div className="flex-div mg-bottom-md">
                 <h2 className="sidebar-title-action">Your projects</h2>
                 <Button variant="contained" className="btn btn-primary btn-block sidebar-button-action animated fadeIn"
-                    size="large" onClick={() => { return true }}>
+                    size="large" onClick={() => { getProjects(1, true) }}>
                     <i id="projectsListLoadingIcon" className="fas fa-sync-alt" style={{ color: "white" }}></i>
                 </Button>
             </div>
-            { projectsList.length?
+            { projects.length?
                 <ul className="projects-list">
-                    {projectsList.map(project => {
+                    {projects.map(project => {
                         return (
                             <li key={project._id} className="flex-div" onClick={() => { selectProject(project); }}>
                                 <span className="mg-right">{project.name}</span>
@@ -71,16 +55,20 @@ const ProjectList = ({ addNotification }) => {
                                 </Button>
                             </li>);
                     })}
+                    { page<lastPage?
+                        <li className="text-center">
+                            <Button variant="contained" className="btn btn-primary btn-block btn-action animated fadeIn"
+                                size="large" onClick={() => { getProjects(page+1, true) }}>
+                                <i className="fas fa-plus" style={{ color: "white" }}></i>
+                            </Button>
+                        </li>
+                    : null }
                 </ul>
             :
                 <span>Your projects list is empty, please create a new project.</span>
             }
         </Fragment>
     );
-}
-
-ProjectList.propTypes = {
-    addNotification: PropTypes.func.isRequired
 }
  
 export default ProjectList;

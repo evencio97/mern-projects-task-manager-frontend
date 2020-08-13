@@ -1,42 +1,38 @@
 import React, { useContext, useEffect, Fragment } from 'react';
-import PropTypes from 'prop-types';
 import $ from 'jquery';
 import './Dashboard.css';
 // Contexts
-import ProjectContext from '../../context/projects/ProjectContext';
 import AppContext from '../../context/app/AppContext';
+import ProjectContext from '../../context/projects/ProjectContext';
 // Components
 import LoadingSpinner from '../loadingSpinner/LoadingSpinner';
 import Sidebar from '../sidebar/Sidebar';
 import FormTask from '../formTask/FormTask';
 import TaskList from '../taskList/TaskList';
 
-function Dashboard({ addNotification }) {
-    // Project Context
-    const projectContext = useContext(ProjectContext);
-    const { projectSelected } = projectContext;
-    // App Context
-    const appContext = useContext(AppContext);
-    const { loading } = appContext;
-    
+function Dashboard() {
+    // Contexts
+    const { loading }= useContext(AppContext);
+    const { projectSelected }= useContext(ProjectContext);
+
     $('#dashboardMain').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', () => {
         $('#dashboardMain').removeClass(['animated', 'fadeIn']);
     });
-
+    
     useEffect(() => {
         if (!projectSelected) return;
         $('#dashboardMain').addClass(['animated', 'fadeIn']);
     }, [projectSelected]);
-
+    
     return (
         <div className="app-container">
-            <Sidebar addNotification={addNotification} />
+            <Sidebar />
             <div className="main-section">
                 <main className="animated fadeIn" id="dashboardMain">
                     { projectSelected?
                         <Fragment>
-                            <FormTask addNotification={addNotification} />
-                            <TaskList addNotification={addNotification} />
+                            <FormTask />
+                            <TaskList />
                         </Fragment>
                     :
                         <div className="task-container text-center">
@@ -49,10 +45,6 @@ function Dashboard({ addNotification }) {
             <LoadingSpinner loading={loading} />
         </div>
     );
-}
-
-Dashboard.propTypes = {
-    addNotification: PropTypes.func.isRequired
 }
 
 export default Dashboard;

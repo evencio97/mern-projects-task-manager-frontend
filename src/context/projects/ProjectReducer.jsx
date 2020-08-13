@@ -1,7 +1,9 @@
-import { SET_PROJECTS, SELECT_PROJECT, UPDATE_PROJECT, DELETE_PROJECT } from '../../types';
+import { INI_PROJECTS_STATE, SET_PROJECTS, SELECT_PROJECT, UPDATE_PROJECT, DELETE_PROJECT } from '../../types';
 
 export default (state, action) => {
     switch (action.type) {
+        case INI_PROJECTS_STATE:
+            return { ...action.data };
         case SET_PROJECTS:
             return { ...state, ...action.data };
         case SELECT_PROJECT:

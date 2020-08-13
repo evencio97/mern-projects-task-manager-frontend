@@ -1,35 +1,35 @@
 import React, { useState, useContext } from 'react';
 import { Button, InputAdornment, IconButton } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-// import axios from 'axios';
-import { Link } from 'react-router-dom'
 import './Auth.css';
 // Contexts
 import AppContext from '../../context/app/AppContext';
+import UserContext from '../../context/user/UserContext';
+// Services
+import { RegisterService } from '../../services/UserService';
 // Components
 import LoadingSpinner from '../loadingSpinner/LoadingSpinner';
 import Input from '../input/Input';
 
-function Register({ addNotification }) {
+function Register({ history }) {
     // App Context
-    const appContext = useContext(AppContext);
-    const { loading, setLoading, setUser } = appContext;
+    const { loading, setLoading, addNotification }= useContext(AppContext);
+    // User Context
+    const { login }= useContext(UserContext);
 
-    const [registerData, setRegisterData] = useState(
-        { name: '', lastname: '', email: '', password: '', confirmedPassword: '', showPasswords: false }
-    );
+    const iniRegisterData= { name: '', lastname: '', email: '', password: '', confirmedPassword: '', showPasswords: false };
+    const [registerData, setRegisterData] = useState(iniRegisterData);
     const {name, lastname, email, password, confirmedPassword, showPasswords} = registerData
     var passwordCheck = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
 
     const initForm = (all=true) => {
-        let aux = all? { name: '', lastname: '', email: '', password: '',
-            confirmedPassword: '', showPasswords: false } :
-            { ...registerData, password: '', confirmedPassword: '', showPasswords: false };
+        let aux = all? iniRegisterData:{ ...registerData, password: '', confirmedPassword: '', showPasswords: false };
         setRegisterData( aux );
     }
 
-    const checkSubmitData = (event) => {
+    const checkSubmitData = async (event) => {
         event.preventDefault();
         if (!(name.length && name.trim())) 
             return addNotification({ variant: 'error', message: "The name can't be empty." });
@@ -43,31 +43,19 @@ function Register({ addNotification }) {
             return addNotification({ variant: 'error', message: "The passwords don't macth." });
         
         setLoading(true);
-        // requestAPI();
-    };
-    
-    /*const requestAPI = async () => {
-        let url = "https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=" + tempCryptoData.currency;
-        let result = await axios.get(url);
-        // Hide Spinner
+        // Register request
+        let result= await RegisterService({ ...registerData, showPasswords: undefined });
         setLoading(false);
-
-        // Validate response
-        if (result.status !== 200 || !result.data) 
-            return addNotification({ variant: 'error', message: 'Please try again later.' });
-        if (result.Message === "You are over your rate limit please upgrade your account!")
-            return addNotification({ variant: 'error', message: 'Query limit has been reached, please try again later.' });
-        let aux = result.data.Data;
-        if (!Array.isArray(aux) || aux===0) 
-            return addNotification({ variant: 'error', message: "Please try with a different currency." });
-        
-        let cryptosAux = [];
-        aux.forEach(element => {
-            cryptosAux.push({ value: element.CoinInfo.Name, label: element.CoinInfo.FullName})
-        });
-        setCryptosOptions(cryptosAux);
-        initForm();
-    }*/
+        // Check error
+        if (result.error) return addNotification({ variant: 'error', message: result.errorCode });
+        // Update state
+        let { user, token } = result;
+        login(user, token);
+        addNotification({ variant: 'success', message: "login" });
+        // Init form
+        initForm(result);
+        history.push("/");
+    };
 
     const valTextInput = value => {
         if (value.length === 0) return false;
@@ -75,7 +63,6 @@ function Register({ addNotification }) {
         return false;
     }
     const valPasswordInput = value => {
-        // var re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
         if (value.length === 0) return false;
         if (value.trim().length === 0 || !passwordCheck.test(value)) return true;
         return false;
@@ -97,7 +84,7 @@ function Register({ addNotification }) {
 
     return (
         <div className="user-form">
-            <div className="form-container custom-shadow-dark animated fadeInDown text-center">
+            <div className="form-container auth-form-container custom-shadow-dark animated fadeInDown text-center">
                 <h1>Please enter your info</h1>
                 <form className="text-left" id="registerForm" onSubmit={(e) => checkSubmitData(e)}>
                     <div className="form-field col-md-6">
@@ -157,7 +144,7 @@ function Register({ addNotification }) {
 }
 
 Register.propTypes = {
-    addNotification: PropTypes.func.isRequired
+    history: PropTypes.object.isRequired
 }
 
 export default Register;

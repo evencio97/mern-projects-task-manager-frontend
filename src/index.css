@@ -93,6 +93,13 @@ a:hover {
   display: block !important;
   background-color: transparent !important;
 }
+.btn-action {
+  font-size: 0.8rem !important;
+  min-width: min-content !important;
+  width: min-content !important;
+  max-width: min-content !important;
+  padding: 10px 15px !important;
+}
 
 /* Global Clases */
 .flex-div {
