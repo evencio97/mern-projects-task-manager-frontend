@@ -17,6 +17,7 @@ const ProjectList = () => {
     // Load of user projects
     useEffect(() => {
         getProjects(1);
+        // eslint-disable-next-line
     }, []);
     
     const getProjects = async (newPage, notify=false) => {

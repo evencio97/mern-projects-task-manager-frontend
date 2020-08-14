@@ -23,6 +23,7 @@ const FormTask = () => {
     useEffect(() => {
         if (taskSelected) setTaskTemp(taskSelected);
         else if (taskTemp !== iniTaskTemp) setTaskTemp(iniTaskTemp);
+        // eslint-disable-next-line
     }, [taskSelected]);
 
     const checkFormTask = (event) => {

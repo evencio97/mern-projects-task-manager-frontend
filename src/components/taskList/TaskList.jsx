@@ -69,6 +69,7 @@ const TaskList = () => {
     // Load of projects tasks
     useEffect(() => {
         if (projectSelected) getTasks(1);
+        // eslint-disable-next-line
     }, [projectSelected]);
 
     const getTasks = async (newPage, notify=false) => {

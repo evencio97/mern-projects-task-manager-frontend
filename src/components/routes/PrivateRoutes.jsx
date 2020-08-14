@@ -42,6 +42,7 @@ function PrivateRoutes({ component: Component, ...props }) {
             return;
         } 
         setCheckingSession(false);
+        // eslint-disable-next-line
     }, []);
     // Observate token
     useEffect(() => {
@@ -50,6 +51,7 @@ function PrivateRoutes({ component: Component, ...props }) {
             iniTaskState();
             iniProjectState();
         } 
+        // eslint-disable-next-line
     }, [token]);
 
     return (
